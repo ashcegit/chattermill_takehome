@@ -2,9 +2,9 @@ import requests, csv
 from dateutil import parser
 from time import sleep
 
-response=requests.get('https://content.guardianapis.com/search?q=brexit%20OR%20elections&show-fields=wordcount&api-key=44c54c3b-1bb5-4b01-9f06-7ea0496ca617')
+response=requests.get('https://content.guardianapis.com/search?q=brexit%20OR%20elections&show-fields=wordcount&api-key=44c54c3b-1bb5-4b01-9f06-7ea0496ca617').json()
 
-results=response.json()['response']['results']
+results=response['response']['results']
 
 ##Sorting by date
 results.sort(key=lambda x: x['webPublicationDate'],reverse=True)
