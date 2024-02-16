@@ -1,7 +1,8 @@
 import requests, csv
 from dateutil import parser
+from time import sleep
 
-response=requests.get('https://content.guardianapis.com/search?q=brexit%20OR%20elections&api-key=44c54c3b-1bb5-4b01-9f06-7ea0496ca617')
+response=requests.get('https://content.guardianapis.com/search?q=brexit%20OR%20elections&show-fields=wordcount&api-key=44c54c3b-1bb5-4b01-9f06-7ea0496ca617')
 
 results=response.json()['response']['results']
 
@@ -21,11 +22,11 @@ categories=[
     "isHosted",
     "pillarId",
     "pillarName",
-    # "wordcount"
+    "wordcount"
 ]
 
 for result in results:
-    # if int(result['wordcount'])<1000: continue
+    if int(result['fields']['wordcount'])<1000: continue
 
     csv_entry=[]
     for category in categories:
@@ -36,10 +37,13 @@ for result in results:
             csv_entry.append(result[category])
             csv_entry.append(formatted_date_string)
             csv_entry.append(year_string)
+        elif category=="wordcount":
+            csv_entry.append(result['fields']['wordcount'])
         else:
             csv_entry.append(result[category])
 
     csv_records.append(csv_entry)
+    sleep(0.1)
 
 categories.insert(5,"formatted_date")
 categories.insert(6,"year")
