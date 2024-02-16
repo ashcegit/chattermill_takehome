@@ -7,33 +7,46 @@ results=response.json()['response']['results']
 
 results.sort(key=lambda x: x['webPublicationDate'],reverse=True)
 
+csv_records=[]
+
+categories=[
+    "id",
+    "type",
+    "sectionId",
+    "sectionName",
+    "webPublicationDate",
+    "webTitle",
+    "webUrl",
+    "apiUrl",
+    "isHosted",
+    "pillarId",
+    "pillarName",
+    # "wordcount"
+]
+
 for result in results:
-    print(parser.parse(result['webPublicationDate']))
+    # if int(result['wordcount'])<1000: continue
 
-# raw_date=results[0]['webPublicationDate']
-# parsed_date=parser.parse(raw_date)
+    csv_entry=[]
+    for category in categories:
+        if category=="webPublicationDate":
+            parsed_date=parser.parse(result[category])
+            formatted_date_string="{}/{}/{}".format(parsed_date.day,parsed_date.month,parsed_date.year)
+            year_string=str(parsed_date.year)
+            csv_entry.append(result[category])
+            csv_entry.append(formatted_date_string)
+            csv_entry.append(year_string)
+        else:
+            csv_entry.append(result[category])
 
-# print(parsed_date)
+    csv_records.append(csv_entry)
 
-# csv_records=[]
+categories.insert(5,"formatted_date")
+categories.insert(6,"year")
 
-# categories=[
-#     "id",
-#     "type",
-#     "sectionId",
-#     "sectionName",
-#     "webPublicationDate",
-#     "webTitle",
-#     "webUrl",
-#     "apiUrl",
-#     "isHosted",
-#     "pillarId",
-#     "pillarName",
-#     "Wordcount"
-# ]
+csv_records.insert(0,categories)
 
-# for result in results:
-#     csv_entry=[]
-#     for category in categories:
-#         csv_entry.append(result[category])
-#     csv_records.append(csv_entry)
+with open('guardian_data.csv','w',newline='') as file:
+    writer=csv.writer(file)
+    writer.writerows(csv_records)
+
