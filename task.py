@@ -6,6 +6,7 @@ response=requests.get('https://content.guardianapis.com/search?q=brexit%20OR%20e
 
 results=response.json()['response']['results']
 
+##Sorting by date
 results.sort(key=lambda x: x['webPublicationDate'],reverse=True)
 
 csv_records=[]
@@ -31,14 +32,20 @@ for result in results:
     csv_entry=[]
     for category in categories:
         if category=="webPublicationDate":
+            #get datetime and extract time divisions
             parsed_date=parser.parse(result[category])
             formatted_date_string="{}/{}/{}".format(parsed_date.day,parsed_date.month,parsed_date.year)
             year_string=str(parsed_date.year)
+
+            #append raw date, formatted date and year
             csv_entry.append(result[category])
             csv_entry.append(formatted_date_string)
             csv_entry.append(year_string)
+
         elif category=="wordcount":
+            #wordcount is hidden under extra fields key
             csv_entry.append(result['fields']['wordcount'])
+            
         else:
             csv_entry.append(result[category])
 
