@@ -20,7 +20,7 @@ Pesticides Law change: The UK has not banned 36 harmful pesticides that have bee
 
 sentences=tokenize.sent_tokenize(corpus)
 
-keys=[
+sentiments=[
     "negative",
     "neutral",
     "positive",
@@ -33,8 +33,8 @@ for sentence in sentences:
     sentence_sentiment=np.array([])
     sia=SentimentIntensityAnalyzer()
     sentiment_dict=sia.polarity_scores(sentence)
-    for key in sentiment_dict:
-        sentence_sentiment=np.append(sentence_sentiment,sentiment_dict[key])
+    for sentiment_key in sentiment_dict:
+        sentence_sentiment=np.append(sentence_sentiment,sentiment_dict[sentiment_key])
     
     article_sentiment=np.append(article_sentiment,np.array([sentence_sentiment]),axis=0)
 
