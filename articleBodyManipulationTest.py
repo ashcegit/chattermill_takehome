@@ -6,5 +6,5 @@ response=requests.get('https://content.guardianapis.com/search?q=brexit&show-blo
 
 result=response['response']['results'][0]
 
-print(result['blocks']['body'][0]['bodyTextSummary'])
+body_corpus=result['blocks']['body'][0]['bodyTextSummary']
 
