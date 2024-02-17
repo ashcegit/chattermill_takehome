@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Make a query</title>
+    </head>
+    <body>
+        <header>
+            <div class="container">
+                <h1>Guardian Sentiment Analysis</h1>
+                <nav>
+                    <ul class="menu">
+                        <li><a href="{{url_for('home')}}">Home</a></li>
+                        <li><a href="{{url_for('make_query')}}">Make a query</a></li>
+                        <li><a href="{{url_for('me')}}">Me</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+        <form method="POST">
+            <!-- <label for="query">Query</label>
+            <input name="query">
+
+            <label for="from_date">From Date</label>
+            <input name="from_date" type="date">
+
+            <label for="to_date">To Date</label>
+            <input name="to_date" type="date">
+
+            <label for="max_pages">Maximum Number of Pages Analysed (50 articles to a page)</label>
+            <input name="max_pages" type="number" min="1" placeholder="1">
+            <input type="submit"> -->
+
+            {% from "_formhelpers.html" import render_field %}
+
+            <form method=post>
+            <dl>
+                {{ render_field(form.query) }}
+                {{ render_field(form.from_date) }}
+                {{ render_field(form.to_date) }}
+                {{ render_field(form.max_pages) }}
+            </dl>
+            <p><input type=submit>
+            </form>
+        </form>
+    </body>
+</html>

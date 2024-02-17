@@ -12,6 +12,10 @@ import re
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import numpy as np
 
+### Uncomment to download required corpora/lexicons/models on first time running
+# nltk.download('punkt')
+# nltk.download('vader_lexicon')
+
 def run_query(
     session,
     query: str,
@@ -117,19 +121,13 @@ def write_page(
         writer=csv.writer(file)
         writer.writerows(csv_records)
 
-def run(
+def analyse(
     query: str,
     filename,
     from_date,
     to_date,
-    max_page_num=10 #Will process up to 500 articles by default 
-):
-    
-    ### Uncomment to download required corpora/lexicons/models on first time running
-    # nltk.download('punkt')
-    # nltk.download('vader_lexicon')
-
-    table_name=query.replace('%20','')
+    max_pages=10 #Will process up to 500 articles by default 
+) -> bool:
 
     session=LimiterSession(per_second=1)
 
@@ -161,7 +159,7 @@ def run(
 
     num_pages=first_response['pages']
 
-    num_pages=min(max_page_num,num_pages)
+    num_pages=min(max_pages,num_pages)
     
     if num_pages>1:
         for page_num in range(2,num_pages+1):
@@ -175,20 +173,21 @@ def run(
 
             write_page(response,filename)
 
+    return True
 
 if __name__=='__main__':
     dummy_query="brexit%20OR%20election"
     filename="test.csv"
     from_date=None
     to_date=None
-    max_page_num=2
+    max_pages=2
 
-    run(
+    analyse(
         query=dummy_query,
         filename=filename,
         from_date=from_date,
         to_date=to_date,
-        max_page_num=max_page_num
+        max_pages=max_pages
     )
     
 
