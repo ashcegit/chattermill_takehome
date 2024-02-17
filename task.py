@@ -1,4 +1,5 @@
 import csv
+from const import CATEGORIES,SENTIMENTS,API_KEY
 from requests_ratelimiter import LimiterSession
 from dateutil import parser
 from time import sleep
@@ -11,104 +12,180 @@ import re
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import numpy as np
 
-### Uncomment to download required corpora/lexicons/models on first time running
-# nltk.download('punkt')
-# nltk.download('vader_lexicon')
+def run_query(
+    session,
+    query: str,
+    from_date=None,
+    to_date=None,
+    page_num=None
+) -> dict:
+    """
+    Runs guardian api call
 
-session=LimiterSession(per_second=1)
+    :param: session: Session object, either from requests package or an analogue
+    :param: query: HTML encoded string that can include ANDs and ORs etc.
+    :param: from_date: dd-mm-yyyy formatted string
+    :param: to_date: dd-mm-yyyy formatted string
+    :param: page_num: specified page of results to ask for
 
-categories=[
-    "id",
-    "type",
-    "sectionId",
-    "sectionName",
-    "webPublicationDate",
-    "webTitle",
-    "webUrl",
-    "apiUrl",
-    "isHosted",
-    "pillarId",
-    "pillarName",
-    "wordcount"
-]
+    :returns: python dict of returned json
+    """
 
-sentiments=[
-    "negative",
-    "neutral",
-    "positive",
-    "compound"
-]
+    get_string='https://content.guardianapis.com/search?q={}{}{}&order-by=newest&show-blocks=body{}&show-fields=wordcount&page-size=50&api-key={}'.format(
+                    query,
+                    "&from-date={}".format(from_date) if from_date!=None else "",
+                    "&to-date={}".format(to_date) if to_date!=None else "",
+                    "&page={}".format(page_num) if page_num!=None else "",
+                    API_KEY
+                )
+    
+    response=session.get(get_string).json()
 
-categories_to_write=categories.copy()
+    return response
 
-categories_to_write.insert(5,"formatted_date")
-categories_to_write.insert(6,"year")
+def process_article(
+    article: dict
+) -> list:
+    """
+    Processes article json into list ready to be added to csv document.
+    This includes extracting metadata from api response and performing sentiment analysis on body text
 
-categories_to_write.extend(sentiments)
+    :param: article: dict object of article specific data
 
-csv_records=[]
+    :returns: List of metadata
+    """
 
-csv_records.insert(0,categories_to_write)
+    if int(article['fields']['wordcount'])<200: return
 
-with open('guardian_data.csv','w',newline='') as file:
-    writer=csv.writer(file)
-    writer.writerows(csv_records)
+    csv_entry=[]
+    for category in CATEGORIES:
+        if category=="webPublicationDate":
+            #get datetime and extract time divisions
+            parsed_date=parser.parse(article[category])
+            formatted_date_string="{}/{}/{}".format(parsed_date.day,parsed_date.month,parsed_date.year)
+            year_string=str(parsed_date.year)
 
-from_date="{}-{}-{}".format("2016","01","01")
+            #append raw date, formatted date and year
+            csv_entry.append(article[category])
+            csv_entry.append(formatted_date_string)
+            csv_entry.append(year_string)
 
-### limit pages requested
-max_page_num=10
-num_pages=min(max_page_num,session.get('https://content.guardianapis.com/search?q=brexit%20OR%20election&from-date={}&order-by=newest&page-size=50&api-key=44c54c3b-1bb5-4b01-9f06-7ea0496ca617'.format(from_date)).json()['response']['pages'])
-
-for page_num in range(1,num_pages+1):
-    csv_records=[]
-    response=session.get('https://content.guardianapis.com/search?q=brexit%20OR%20election&from-date={}&order-by=newest&page={}&show-blocks=body&show-fields=wordcount&page-size=50&api-key=44c54c3b-1bb5-4b01-9f06-7ea0496ca617'.format(from_date,page_num)).json()['response']
-
-    results=response['results']
-
-    for result in results:
-        if int(result['fields']['wordcount'])<200: continue
-
-        csv_entry=[]
-        for category in categories:
-            if category=="webPublicationDate":
-                #get datetime and extract time divisions
-                parsed_date=parser.parse(result[category])
-                formatted_date_string="{}/{}/{}".format(parsed_date.day,parsed_date.month,parsed_date.year)
-                year_string=str(parsed_date.year)
-
-                #append raw date, formatted date and year
-                csv_entry.append(result[category])
-                csv_entry.append(formatted_date_string)
-                csv_entry.append(year_string)
-
-            elif category=="wordcount":
-                #wordcount is hidden under extra fields key
-                csv_entry.append(result['fields']['wordcount'])
-                
-            else:
-                csv_entry.append(result[category])
-
-            corpus=result['blocks']['body'][0]['bodyTextSummary']
-            sentences=tokenize.sent_tokenize(corpus)
-
-        article_sentiment=np.empty((0,4))
-
-        for sentence in sentences:
-            sentence_sentiment=np.array([])
-            sia=SentimentIntensityAnalyzer()
-            sentiment_dict=sia.polarity_scores(sentence)
-            for sentiment_key in sentiment_dict:
-                sentence_sentiment=np.append(sentence_sentiment,sentiment_dict[sentiment_key])
+        elif category=="wordcount":
+            #wordcount is hidden under extra fields key
+            csv_entry.append(article['fields']['wordcount'])
             
-            article_sentiment=np.append(article_sentiment,np.array([sentence_sentiment]),axis=0)
+        else:
+            csv_entry.append(article[category])
 
-        avg_article_sentiment=article_sentiment.mean(axis=0)
-        csv_entry.extend(avg_article_sentiment.tolist())
+        corpus=article['blocks']['body'][0]['bodyTextSummary']
+        sentences=tokenize.sent_tokenize(corpus)
 
-        csv_records.append(csv_entry)
+    article_sentiment=np.empty((0,4))
 
-    with open('guardian_data.csv','a',newline='') as file:
+    for sentence in sentences:
+        sentence_sentiment=np.array([])
+        sia=SentimentIntensityAnalyzer()
+        sentiment_dict=sia.polarity_scores(sentence)
+        for sentiment_key in sentiment_dict:
+            sentence_sentiment=np.append(sentence_sentiment,sentiment_dict[sentiment_key])
+        
+        article_sentiment=np.append(article_sentiment,np.array([sentence_sentiment]),axis=0)
+
+    avg_article_sentiment=article_sentiment.mean(axis=0)
+    csv_entry.extend(avg_article_sentiment.tolist())
+
+    return csv_entry   
+        
+def write_page(
+    response: dict,
+    file_name: str
+) -> None:
+    """
+    Processes and writes a page of results to a csv file
+
+    :param: response: response dict containing many articles
+    :param: file_name: name of csv file
+    """
+    csv_records=[]
+
+    articles=response['results']
+
+    for article in articles:
+        csv_records.append(process_article(article))
+
+    with open(file_name,'a',newline='') as file:
         writer=csv.writer(file)
         writer.writerows(csv_records)
+
+def run(
+    query: str,
+    from_date,
+    to_date,
+    max_page_num=10 #Will process up to 500 articles by default 
+):
+    
+    ### Uncomment to download required corpora/lexicons/models on first time running
+    # nltk.download('punkt')
+    # nltk.download('vader_lexicon')
+
+    table_name=query.replace('%20','')
+
+    session=LimiterSession(per_second=1)
+
+    categories_to_write=CATEGORIES.copy()
+
+    categories_to_write.insert(5,"formatted_date")
+    categories_to_write.insert(6,"year")
+
+    categories_to_write.extend(SENTIMENTS)
+
+    csv_records=[]
+
+    csv_records.insert(0,categories_to_write)
+
+    with open('{}.csv'.format(table_name),'w',newline='') as file:
+        writer=csv.writer(file)
+        writer.writerows(csv_records)
+
+    first_call=run_query(
+        session,
+        query,
+        from_date=from_date,
+        to_date=to_date,
+    )
+    
+    first_response=first_call['response']
+
+    write_page(first_response)
+
+    num_pages=first_response['pages']
+
+    num_pages=min(max_page_num,num_pages)
+    
+    if num_pages>1:
+        for page_num in range(2,num_pages+1):
+            response=run_query(
+                session,
+                query,
+                from_date=from_date,
+                to_date=to_date,
+                page_num=page_num
+            )['response']
+
+            write_page(response)
+
+
+if __name__=='__main__':
+    dummy_query="brexit%20OR%20election"
+    from_date=None
+    to_date=None
+    max_page_num=2
+
+    run(
+        query=dummy_query,
+        from_date=from_date,
+        to_date=to_date,
+        max_page_num=max_page_num
+    )
+    
 
