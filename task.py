@@ -20,7 +20,7 @@ def run_query(
     page_num=None
 ) -> dict:
     """
-    Runs guardian api call
+    Runs guardian api call. Can be used with custom session object
 
     :param: session: Session object, either from requests package or an analogue
     :param: query: HTML encoded string that can include ANDs and ORs etc.
@@ -98,7 +98,7 @@ def process_article(
         
 def write_page(
     response: dict,
-    file_name: str
+    filename: str
 ) -> None:
     """
     Processes and writes a page of results to a csv file
@@ -113,12 +113,13 @@ def write_page(
     for article in articles:
         csv_records.append(process_article(article))
 
-    with open(file_name,'a',newline='') as file:
+    with open(filename,'a',newline='') as file:
         writer=csv.writer(file)
         writer.writerows(csv_records)
 
 def run(
     query: str,
+    filename,
     from_date,
     to_date,
     max_page_num=10 #Will process up to 500 articles by default 
@@ -143,7 +144,7 @@ def run(
 
     csv_records.insert(0,categories_to_write)
 
-    with open('{}.csv'.format(table_name),'w',newline='') as file:
+    with open(filename,'w',newline='') as file:
         writer=csv.writer(file)
         writer.writerows(csv_records)
 
@@ -156,7 +157,7 @@ def run(
     
     first_response=first_call['response']
 
-    write_page(first_response)
+    write_page(first_response,filename)
 
     num_pages=first_response['pages']
 
@@ -172,17 +173,19 @@ def run(
                 page_num=page_num
             )['response']
 
-            write_page(response)
+            write_page(response,filename)
 
 
 if __name__=='__main__':
     dummy_query="brexit%20OR%20election"
+    filename="test.csv"
     from_date=None
     to_date=None
     max_page_num=2
 
     run(
         query=dummy_query,
+        filename=filename,
         from_date=from_date,
         to_date=to_date,
         max_page_num=max_page_num
