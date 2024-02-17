@@ -4,19 +4,38 @@ from wtforms import Form, BooleanField, StringField, DateField,IntegerField
 from wtforms.validators import DataRequired
 from article_analysis import analyse
 from html import escape
+from datetime import datetime
 
 app=Flask(__name__)
 
+class NullableDateField(DateField):
+    """
+    Nullable version of native WTForms DateField Class
+    """
+
+    def process_formdata(self,values):
+        if values:
+            date_string=' '.join(values).strip()
+            if date_string=='':
+                self.data=None
+                return
+            
+            try:
+                self.data=datetime.strptime(date_string,self.format).date()
+            except ValueError:
+                self.data=None
+                raise ValueError(self.gettext('Not a valid date value'))
+
 class QueryForm(Form):
     query=StringField("Query",validators=[DataRequired()])
-    from_date=DateField("From Date",default=None,validators=[])
-    to_date=DateField("To Date",default=None,validators=[])
+    from_date=NullableDateField("From Date",default=None,validators=[])
+    to_date=NullableDateField("To Date",default=None,validators=[])
     max_pages=IntegerField(
         "Maximum Number of Pages (50 articles to a page)",
         validators=[DataRequired()],
+        default="1",
         render_kw={
             "min":"1",
-            "placeholder":"1"
         }
     )
 
@@ -43,9 +62,11 @@ def make_query():
         max_pages=form.max_pages.data
 
         filename=query.replace(' ','')+".csv"
-        print(f"Filename {filename}")
 
         escaped_query=escape(query)
+
+        print(from_date)
+        print(to_date)
 
         print("analysis attempted")
 
@@ -59,12 +80,12 @@ def make_query():
 
         print("analysis done")
 
-        return redirect(url_for('showresults'))
+        return redirect(url_for('show_results'))
     
     return render_template('makequery.html',form=form)
 
 @app.route('/showresults')
-def show_query():
+def show_results():
 
     return render_template('showresults.html')
 

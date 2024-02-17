@@ -59,8 +59,6 @@ def process_article(
     :returns: List of metadata
     """
 
-    if int(article['fields']['wordcount'])<200 or article['pillarName']!="News": return
-
     csv_entry=[]
     for category in CATEGORIES:
         if category=="webPublicationDate":
@@ -115,11 +113,14 @@ def write_page(
     articles=response['results']
 
     for article in articles:
-        csv_records.append(process_article(article))
+        if int(article['fields']['wordcount'])>200 and article['pillarName']=="News":
+            csv_records.append(process_article(article))
 
     with open(filename,'a',newline='') as file:
         writer=csv.writer(file)
         writer.writerows(csv_records)
+
+    return
 
 def analyse(
     query: str,
@@ -154,6 +155,9 @@ def analyse(
     )
     
     first_response=first_call['response']
+
+    if(first_response['total']==0):
+        return False
 
     write_page(first_response,filename)
 
