@@ -55,7 +55,7 @@ def process_article(
     :returns: List of metadata
     """
 
-    if int(article['fields']['wordcount'])<200: return
+    if int(article['fields']['wordcount'])<200 or article['pillarName']!="News": return
 
     csv_entry=[]
     for category in CATEGORIES:
