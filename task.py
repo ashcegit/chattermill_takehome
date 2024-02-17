@@ -15,10 +15,6 @@ import numpy as np
 # nltk.download('punkt')
 # nltk.download('vader_lexicon')
 
-### leftover code snippet
-# ##Sorting by date
-# results.sort(key=lambda x: x['webPublicationDate'],reverse=True)
-
 session=LimiterSession(per_second=1)
 
 categories=[
