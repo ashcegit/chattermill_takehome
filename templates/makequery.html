@@ -6,6 +6,11 @@
             function clearField(targetElement){
                 targetElement.value="";
             }
+
+            // function playLoadingAnim(){
+            //     alert('loading');
+            // }
+            
         </script>
     </head>
     <body>
@@ -21,18 +26,18 @@
                 </nav>
             </div>
         </header>
-        <form method="POST">
-            {% from "_formhelpers.html" import render_field %}
 
-            <form method=post>
-            <dl>
-                {{ render_field(form.query) }}
-                {{ render_field(form.from_date,id='from_date') }} <button type="button" onclick="clearField(from_date)">Clear</button>
-                {{ render_field(form.to_date,id='to_date') }} <button type="button" onclick="clearField(to_date)">Clear</button>
-                {{ render_field(form.max_pages) }}
-            </dl>
-            <p><input type=submit>
-            </form>
+        <!-- formhelpers template from flask's docu (very helpful) -->
+        {% from "_formhelpers.html" import render_field %}
+        <form method=post>
+        <dl>
+            {{ render_field(form.query,id=queryField) }}
+            {{ render_field(form.from_date,id='fromDateField') }} <button type="button" onclick="clearField(fromDateField)">Clear</button>
+            {{ render_field(form.to_date,id='toDateField') }} <button type="button" onclick="clearField(toDateField)">Clear</button>
+            {{ render_field(form.max_pages,id=maxPageField) }}
+        </dl>
+        <input type=submit>
         </form>
+        
     </body>
 </html>
