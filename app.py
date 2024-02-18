@@ -67,6 +67,8 @@ def make_query():
             "_to{}".format(str(to_date)) if to_date!=None else "",
             max_pages)+".csv"
         
+        ## add extra info to query for client-side printing later
+
         subtitle="{} {}".format(
             "From {}".format(str(from_date)) if from_date!=None else "",
             "Up To {}".format(str(to_date)) if to_date!=None else "",
@@ -76,8 +78,6 @@ def make_query():
             subtitle=""
         
         query+=" "+subtitle
-
-        #check if file already exists - if so, skip
 
         if os.path.exists(filename):
             succeeded=True
@@ -99,7 +99,9 @@ def make_query():
         else:
             return redirect(url_for('query_failed'))
         
-    return render_template('makequery.html',form=form,submitted=False)
+    return render_template('makequery.html',
+                           form=form,
+                           submitted=False)
 
 @app.route('/showresults')
 def show_results():
@@ -125,7 +127,8 @@ def show_report():
     df=pd.read_csv(filename,encoding='unicode_escape')
 
     return render_template('showreport.html',
-                           tables=[df.to_html()],
+                           tables=[df.to_html(justify="left",
+                                              render_links=True)],
                            titles=[''])
 
 @app.route('/queryfailed')

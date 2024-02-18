@@ -26,11 +26,10 @@
                 ]);
 
                 pieConfig={
-                    'title':"Sentiment for {{query}}",
                     'colors':['#db380f','#959695','#3ad413'],
                     'backgroundColor': '#8ecae6',
                     'width':500,
-                    'height':500,
+                    'height':250,
                 }
 
                 var pieChart=new google.visualization.PieChart(
@@ -51,8 +50,9 @@
         </header>
 
         <div class="reportContent">
+            <h1>Sentiment for {{query}}</h1>
             <div id="pieChartDiv"></div>
-            <a href="{{url_for('show_report')}}">See the CSV report for this query</a>
+            <a href="{{url_for('show_report')}}"><h2>See the table of articles used in this query</h2></a>
         </div>
     </body>
 </html>
