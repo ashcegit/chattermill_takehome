@@ -6,6 +6,8 @@ from article_analysis import analyse
 from html import escape
 from datetime import datetime
 import os
+import pandas as pd
+import const
 
 app=Flask(__name__)
 
@@ -78,6 +80,7 @@ def make_query():
 
         if(succeeded):
             session['filename']=filename
+            session['query']=query
             return redirect(url_for('show_results'))
         else:
             return redirect(url_for('query_failed'))
@@ -87,11 +90,24 @@ def make_query():
 @app.route('/showresults')
 def show_results():
     filename=session['filename']
+    query=session['query']
     session.clear()
 
-    
+    columns=const.SENTIMENTS
+    df=pd.read_csv(filename,usecols=columns,encoding='unicode_escape')
 
-    return render_template('showresults.html')
+    means=df.mean(axis=0).values.tolist()
+
+    return render_template('showresults.html',
+                           query=query,
+                           negative=means[0],
+                           neutral=means[1],
+                           positive=means[2])
+
+@app.route('/showreport')
+def show_report():
+
+    pass
 
 @app.route('/queryfailed')
 def query_failed():

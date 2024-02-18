@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Make a query</title>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> 
+        <script type="text/javascript">
+            google.charts.load('current', {'packages': ['corechart']})
+            google.charts.setOnLoadCallback(drawPie)
+
+            function roundProportion(number){
+                return Math.round(number*100)/100;
+            }
+
+            function drawPie(){
+                var data=new google.visualization.DataTable();
+
+                data.addColumn('string','Sentiment');
+                data.addColumn('number','Proportion');
+
+                data.addRows([
+                    ['Negative',roundProportion('{{negative}}')],
+                    ['Neutral',roundProportion('{{neutral}}')],
+                    ['Positive',roundProportion('{{positive}}')]
+                ]);
+
+                pieConfig={
+                    'title':"Sentiment for '{{query}}'",
+                    'width':500,
+                    'height':500
+                }
+
+                var pieChart=new google.visualization.PieChart(
+                    document.getElementById("pieChartDiv")
+                );
+
+                pieChart.draw(data,pieConfig)
+            }
+        </script>
+    </head>
+    <body>
+        <header>
+            <div class="container">
+                <h1>Guardian Sentiment Analysis</h1>
+                <nav>
+                    <ul class="menu">
+                        <li><a href="{{url_for('home')}}">Home</a></li>
+                        <li><a href="{{url_for('make_query')}}">Make a query</a></li>
+                        <li><a href="{{url_for('me')}}">Me</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+        <div id="pieChartDiv"></div>
+    </body>
+</html>
