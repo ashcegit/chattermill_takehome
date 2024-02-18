@@ -7,6 +7,8 @@ header{
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin: 2em;
+    border-radius: 20px;
 }
 
 header h1{
@@ -25,6 +27,7 @@ header h1{
     padding: 14px 16px;
     text-decoration: none;
     font-size: 17px;
+    border-radius: 20px;
 }
 
 .menu a:hover{
@@ -34,4 +37,19 @@ header h1{
 
 .menu .currentlySelected{
     background-color: #fb8500;
+}
+
+.foreground{
+    background-color: #219ebc;
+    margin: 1em;
+    padding: 2px;
+    border-radius: 20px;
+}
+
+article{
+    background-color: #8ecae6;
+    color: white;
+    margin: 3em;
+    padding: 1em;
+    border-radius: 20px;    
 }

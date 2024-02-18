@@ -23,6 +23,9 @@ class NullableDateField(DateField):
                 self.data=None
                 return
             
+            if type(self.format)==list:
+                self.format=self.format[0]
+            
             try:
                 self.data=datetime.strptime(date_string,self.format).date()
             except ValueError:
@@ -64,6 +67,16 @@ def make_query():
             "_to{}".format(str(to_date)) if to_date!=None else "",
             max_pages)+".csv"
         
+        subtitle="{} {}".format(
+            "From {}".format(str(from_date)) if from_date!=None else "",
+            "Up To {}".format(str(to_date)) if to_date!=None else "",
+        )
+
+        if subtitle==" ":
+            subtitle=""
+        
+        query+=" "+subtitle
+
         #check if file already exists - if so, skip
 
         if os.path.exists(filename):
@@ -118,10 +131,6 @@ def show_report():
 @app.route('/queryfailed')
 def query_failed():
     return render_template('queryfailed.html')
-
-@app.route('/me')
-def me():
-    return render_template('me.html')
 
 if __name__=='__main__':
     app.secret_key='c3VwZXIgZHVwZXIgc2VjcmV0IGtleQ=='

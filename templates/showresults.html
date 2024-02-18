@@ -3,6 +3,7 @@
     <head>
         <title>Make a query</title>
         <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/main.css')}}">
+        <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/results.css')}}">
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> 
         <script type="text/javascript">
             google.charts.load('current', {'packages': ['corechart']})
@@ -25,10 +26,11 @@
                 ]);
 
                 pieConfig={
-                    'title':"Sentiment for '{{query}}'",
+                    'title':"Sentiment for {{query}}",
                     'colors':['#db380f','#959695','#3ad413'],
+                    'backgroundColor': '#8ecae6',
                     'width':500,
-                    'height':500
+                    'height':500,
                 }
 
                 var pieChart=new google.visualization.PieChart(
@@ -43,13 +45,14 @@
         <header>
             <h1>Guardian Sentiment Analysis</h1>
             <nav class="menu">
-                <a href="{{url_for('me')}}">Me</a>
                 <a href="{{url_for('make_query')}}">Make a query</a>
                 <a href="{{url_for('home')}}">Home</a>
             </nav>
         </header>
 
-        <div id="pieChartDiv"></div>
-        <a href="{{url_for('show_report')}}">See the CSV report for this query</a>
+        <div class="reportContent">
+            <div id="pieChartDiv"></div>
+            <a href="{{url_for('show_report')}}">See the CSV report for this query</a>
+        </div>
     </body>
 </html>

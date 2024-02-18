@@ -27,7 +27,7 @@ REPORT_HEADERS=[
     "sectionName",
     "webPublicationDate",
     "formattedDate",
-    "year"
+    "year",
     "webTitle",
     "webUrl",
     "apiUrl",
