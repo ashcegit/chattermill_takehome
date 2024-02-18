@@ -2,6 +2,11 @@
 <html>
     <head>
         <title>Make a query</title>
+        <script type="text/javascript">
+            function clearField(targetElement){
+                targetElement.value="";
+            }
+        </script>
     </head>
     <body>
         <header>
@@ -22,8 +27,8 @@
             <form method=post>
             <dl>
                 {{ render_field(form.query) }}
-                {{ render_field(form.from_date) }}
-                {{ render_field(form.to_date) }}
+                {{ render_field(form.from_date,id='from_date') }} <button type="button" onclick="clearField(from_date)">Clear</button>
+                {{ render_field(form.to_date,id='to_date') }} <button type="button" onclick="clearField(to_date)">Clear</button>
                 {{ render_field(form.max_pages) }}
             </dl>
             <p><input type=submit>

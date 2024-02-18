@@ -39,14 +39,6 @@ class QueryForm(Form):
         }
     )
 
-    # def validate_from_date(form,field):
-    #     if field.data==None:
-    #         form.from_date=""
-
-    # def validate_to_date(form,field):
-    #     if field.data==None:
-    #         form.to_date=""
-
 @app.route('/home')
 @app.route('/')
 def home():
