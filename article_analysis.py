@@ -124,9 +124,9 @@ def write_page(
 
 def analyse(
     query: str,
-    filename,
-    from_date,
-    to_date,
+    filename: str,
+    from_date: str|None,
+    to_date: str|None,
     max_pages=10 #Will process up to 500 articles by default 
 ) -> bool:
 
@@ -156,7 +156,7 @@ def analyse(
     
     first_response=first_call['response']
 
-    if(first_response['total']==0):
+    if(first_response['total']==0) or first_response['status']!="ok":
         return False
 
     write_page(first_response,filename)

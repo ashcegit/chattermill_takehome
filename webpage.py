@@ -65,12 +65,7 @@ def make_query():
 
         escaped_query=escape(query)
 
-        print(from_date)
-        print(to_date)
-
-        print("analysis attempted")
-
-        analyse(
+        succeeded=analyse(
             escaped_query,
             filename,
             from_date,
@@ -78,16 +73,22 @@ def make_query():
             max_pages
         )
 
-        print("analysis done")
-
-        return redirect(url_for('show_results'))
-    
+        if(succeeded):
+            return redirect(url_for('show_results'))
+        else:
+            return redirect(url_for('query_failed'))
+        
     return render_template('makequery.html',form=form)
 
 @app.route('/showresults')
 def show_results():
 
     return render_template('showresults.html')
+
+@app.route('/queryfailed')
+def query_failed():
+
+    return render_template('queryfailed.html')
 
 @app.route('/me')
 def me():
