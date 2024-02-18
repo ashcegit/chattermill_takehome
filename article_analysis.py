@@ -1,5 +1,5 @@
 import csv
-from const import CATEGORIES,SENTIMENTS,API_KEY
+from const import API_HEADERS,REPORT_HEADERS,API_KEY
 from requests_ratelimiter import LimiterSession
 from dateutil import parser
 from time import sleep
@@ -60,7 +60,7 @@ def process_article(
     """
 
     csv_entry=[]
-    for category in CATEGORIES:
+    for category in API_HEADERS:
         if category=="webPublicationDate":
             #get datetime and extract time divisions
             parsed_date=parser.parse(article[category])
@@ -132,16 +132,9 @@ def analyse(
 
     session=LimiterSession(per_second=1)
 
-    categories_to_write=CATEGORIES.copy()
-
-    categories_to_write.insert(5,"formatted_date")
-    categories_to_write.insert(6,"year")
-
-    categories_to_write.extend(SENTIMENTS)
-
     csv_records=[]
 
-    csv_records.insert(0,categories_to_write)
+    csv_records.insert(0,REPORT_HEADERS)
 
     with open(filename,'w',newline='') as file:
         writer=csv.writer(file)

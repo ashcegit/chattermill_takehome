@@ -1,4 +1,4 @@
-CATEGORIES=[
+API_HEADERS=[
     "id",
     "type",
     "sectionId",
@@ -14,6 +14,27 @@ CATEGORIES=[
 ]
 
 SENTIMENTS=[
+    "negative",
+    "neutral",
+    "positive",
+    "compound"
+]
+
+REPORT_HEADERS=[
+    "id",
+    "type",
+    "sectionId",
+    "sectionName",
+    "webPublicationDate",
+    "formattedDate",
+    "year"
+    "webTitle",
+    "webUrl",
+    "apiUrl",
+    "isHosted",
+    "pillarId",
+    "pillarName",
+    "wordcount",
     "negative",
     "neutral",
     "positive",

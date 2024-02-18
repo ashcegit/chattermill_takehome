@@ -49,6 +49,7 @@ def home():
 
 @app.route('/makequery',methods=["GET","POST"])
 def make_query():
+    session.clear()
     form=QueryForm(request.form)
     if request.method=="POST" and form.validate():
         succeeded=False
@@ -91,7 +92,6 @@ def make_query():
 def show_results():
     filename=session['filename']
     query=session['query']
-    session.clear()
 
     columns=const.SENTIMENTS
     df=pd.read_csv(filename,usecols=columns,encoding='unicode_escape')
@@ -106,12 +106,17 @@ def show_results():
 
 @app.route('/showreport')
 def show_report():
+    filename=session['filename']
+    query=session['query']
 
-    pass
+    df=pd.read_csv(filename,encoding='unicode_escape')
+
+    return render_template('showreport.html',
+                           tables=[df.to_html()],
+                           titles=[''])
 
 @app.route('/queryfailed')
 def query_failed():
-
     return render_template('queryfailed.html')
 
 @app.route('/me')

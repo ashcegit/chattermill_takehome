@@ -25,6 +25,7 @@
 
                 pieConfig={
                     'title':"Sentiment for '{{query}}'",
+                    'colors':['#db380f','#959695','#3ad413'],
                     'width':500,
                     'height':500
                 }
@@ -51,5 +52,6 @@
             </div>
         </header>
         <div id="pieChartDiv"></div>
+        <a href="{{url_for('show_report')}}">See the CSV report for this query</a>
     </body>
 </html>

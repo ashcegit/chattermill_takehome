@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Guardian Sentiment Analysis</title>
+        <title>Make a query</title>
+        </script>
     </head>
     <body>
         <header>
@@ -16,7 +17,9 @@
                 </nav>
             </div>
         </header>
-        <h2>Your query failed</h2>
-        <a href="{{url_for('make_query')}}">Try again</a>
+        {% for table in tables %} 
+        <h2>{{titles[loop.index]}}</h2>                             
+        {{ table|safe }} 
+        {% endfor %}   
     </body>
 </html>
