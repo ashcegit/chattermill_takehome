@@ -2,21 +2,18 @@
 <html>
     <head>
         <title>Make a query</title>
-        </script>
+        <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/main.css')}}">
     </head>
     <body>
         <header>
-            <div class="container">
-                <h1>Guardian Sentiment Analysis</h1>
-                <nav>
-                    <ul class="menu">
-                        <li><a href="{{url_for('home')}}">Home</a></li>
-                        <li><a href="{{url_for('make_query')}}">Make a query</a></li>
-                        <li><a href="{{url_for('me')}}">Me</a></li>
-                    </ul>
-                </nav>
-            </div>
+            <h1>Guardian Sentiment Analysis</h1>
+            <nav class="menu">
+                <a href="{{url_for('me')}}">Me</a>
+                <a href="{{url_for('make_query')}}">Make a query</a>
+                <a href="{{url_for('home')}}">Home</a>
+            </nav>
         </header>
+
         {% for table in tables %} 
         <h2>{{titles[loop.index]}}</h2>                             
         {{ table|safe }} 

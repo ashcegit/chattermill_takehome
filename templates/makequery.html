@@ -2,29 +2,22 @@
 <html>
     <head>
         <title>Make a query</title>
+        <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/main.css')}}">
         <script type="text/javascript">
             function clearField(targetElement){
                 targetElement.value="";
             }
-
-            // function playLoadingAnim(){
-            //     alert('loading');
-            // }
             
         </script>
     </head>
     <body>
         <header>
-            <div class="container">
-                <h1>Guardian Sentiment Analysis</h1>
-                <nav>
-                    <ul class="menu">
-                        <li><a href="{{url_for('home')}}">Home</a></li>
-                        <li><a href="{{url_for('make_query')}}">Make a query</a></li>
-                        <li><a href="{{url_for('me')}}">Me</a></li>
-                    </ul>
-                </nav>
-            </div>
+            <h1>Guardian Sentiment Analysis</h1>
+            <nav class="menu">
+                <a href="{{url_for('me')}}">Me</a>
+                <a class="currentlySelected" href="{{url_for('make_query')}}">Make a query</a>
+                <a href="{{url_for('home')}}">Home</a>
+            </nav>
         </header>
 
         <!-- formhelpers template from flask's docu (very helpful) -->
@@ -38,6 +31,6 @@
         </dl>
         <input type=submit>
         </form>
-        
+
     </body>
 </html>
