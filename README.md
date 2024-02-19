@@ -11,6 +11,7 @@ Underneath the chart of displayed sentiment analysis, you can see a table of all
 To create and activate the necessary conda environment, run:
 
 conda env create -f environment.yml
+
 conda activate chattermill
 
 To start up the app, run:
